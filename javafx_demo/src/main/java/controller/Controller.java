@@ -16,6 +16,7 @@ public class Controller {
     private View view;
 
 //描述位置的状态
+    //英文全称为enumeration （if，switch）x
     public enum posnState{
         BUYABLE,
         IMPROVABLE,

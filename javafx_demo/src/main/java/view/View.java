@@ -88,11 +88,14 @@ public class View extends Application implements Observer {
         stage.setScene(new Scene(root, width, height + 7));
         stage.show();
 
-        model.addObserver(this);
+        //更新模型
+        model.addObserver(this);  //返回view的实类
         update(null, null);
     }
 
     //游戏中的每个位置显示正方形，沿着地图的边缘和角落排列
+    //w表示位置宽度的倍增器，h表示位置高度的倍增器
+    // i表示位置在游戏版上的索引，isHBox表示位置是否在游戏版的侧面
     private GridPane makeGameBoard() {
         GridPane boardGrid = new GridPane();
         int num = 1;
@@ -171,7 +174,7 @@ public class View extends Application implements Observer {
         VBox infoBox = makePosnInfoBox(i, boxsize, isHBox, (w == 2 && h == 2));
         posn.getChildren().addAll(nameBox, infoBox);
 
-        // make each property position inspectable
+
         if (i != 0 && controller.getPosition(i).isProperty()) {
             posn.setOnMouseClicked((MouseEvent e) -> {
                 String[] s = controller.getPosition(i).toString().split("\t");
@@ -317,7 +320,7 @@ public class View extends Application implements Observer {
         // inspector pane
         Pane inspectorPanel = makeTextPanel(posnInspectLabel, panelBorder,
                 "\t  Inspect A Property\nPosition Number:\nProperty Name:\n"
-                        + "Property Price:\nProperty Owner:\nImprovements:",
+                        + "Property Price:\nProperty Owner:\n",//Improvements:
                 new Insets(7, 7, 7, 7), panelWidth);
 
         // 显示钱
@@ -341,27 +344,27 @@ public class View extends Application implements Observer {
 
 
         // 创建 Label 控件
-        Label diceRollLabel = new Label("4"); // 假设骰子点数为 4
+       // Label diceRollLabel = new Label("4"); // 假设骰子点数为 4
 
 // 创建 ImageView 控件数组
-        Image[] diceImages = new Image[12];
-        for (int i = 0; i < 12; i++) {
-            diceImages[i] = new Image("file:../resource/" + (i + 1) + ".png");
-        }
+        //Image[] diceImages = new Image[12];
+        //for (int i = 0; i < 12; i++) {
+          //  diceImages[i] = new Image("file:../resource/" + (i + 1) + ".png");
+        //}
 
 // 根据骰子点数选择对应的图片
-        int diceRoll = Integer.parseInt(diceRollLabel.getText());
-        ImageView diceImageView = new ImageView(diceImages[diceRoll - 1]);
-        diceImageView.setFitWidth(30);
-        diceImageView.setFitHeight(30);
+     //   int diceRoll = Integer.parseInt(diceRollLabel.getText());
+       // ImageView diceImageView = new ImageView(diceImages[diceRoll - 1]);
+        //diceImageView.setFitWidth(30);
+        //diceImageView.setFitHeight(30);
 
 // 创建一个包含数字和图片的 HBox
-        HBox diceBox = new HBox();
-        diceBox.getChildren().addAll(diceRollLabel, diceImageView);
+        //HBox diceBox = new HBox();
+        //diceBox.getChildren().addAll(diceRollLabel, diceImageView);
 
 // 将包含数字和图片的 HBox 添加到 GridPane 中
-        gameInfoPane.add(makeInfoLabel("Dice Roll: ", null, 1.3), 0, 1);
-        gameInfoPane.add(diceBox, 1, 1);
+        //gameInfoPane.add(makeInfoLabel("Dice Roll: ", null, 1.3), 0, 1);
+       // gameInfoPane.add(diceBox, 1, 1);
 
         // 显示赢家
         GridPane winnerPane = makeInfoPane(panelWidth);
@@ -475,11 +478,6 @@ public class View extends Application implements Observer {
         //地图上的位置
         for (Position p : model.getBoard()) {
 
-            // 显示扩建数
-            for (HBox b : houseIcons)
-                if (controller.isPosn(b.getId(), p.getNumber()))
-                    updateHouses(p, b);
-
             // 根据owner对位置进行颜色编码
             for (Pane b : propertiesPanes)
                 if (controller.isPosn(b.getId(), p.getNumber()))
@@ -532,28 +530,11 @@ public class View extends Application implements Observer {
 
             case NONE:
                 interactBtn.setDisable(true);
-                interactBtn.setText("Buy or Improve");
+                interactBtn.setText("Buy ");//or improvement
                 break;
         }
     }
 
-    //在地图上显示对房产的扩建
-    // 对于每个扩建，都会显示一个房屋图标，如果在财产上建造了旅馆，则会显示单词“旅馆”。
-    //p 可能已进行改进的游戏版上的位置
-    //b 如果该财产上有改进，则创建房屋图标的 Pane
-    private void updateHouses(Position p, HBox b) {
-        assert (p.isProperty()) : "The position is not a property and therefore"
-                + " cannot have improvements.";
-        if (!p.isHotel()) {
-            b.getChildren().clear();
-            for (int i = 0; i < p.getImprovements(); i++)
-                b.getChildren().add(makeHouseIcon());
-        } else {
-            b.getChildren().clear();
-            b.getChildren().add(new Label("Hotel"));
-            b.setPadding(new Insets(-2, 0, -1, 0));
-        }
-    }
 
     //根据所有者对property位置进行颜色编码
     // 如果该位置有所有者，则在该位置的背景中显示该玩家的颜色
@@ -607,24 +588,6 @@ public class View extends Application implements Observer {
                 Color.GREY, BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY, BorderWidths.DEFAULT
         ));
-    }
-
-    //创建一个小图标，代表地图上的扩建。
-    //返回 一个房屋形状的多边形
-    private Polygon makeHouseIcon() {
-        Polygon p = new Polygon();
-        p.getPoints().addAll(new Double[]{
-                1.0, 8.0, 1.0, 4.0,
-                0.0, 4.0, 4.5, 0.0,
-                9.0, 4.0, 8.0, 4.0,
-                8.0, 8.0
-        });
-
-        p.setScaleX(1.1);
-        p.setScaleY(1.3);
-        p.setFill(Color.TRANSPARENT);
-        p.setStroke(Color.BLACK);
-        return p;
     }
 
     //创建一个小图标，代表玩家

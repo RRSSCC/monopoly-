@@ -11,7 +11,6 @@ public class Position {
     private final int roadNumber;
     private final double price;
     private Player owner = null;
-    private int improvements = 0;
     private boolean hotel = false;
 
     public int getNumber() {
@@ -34,13 +33,6 @@ public class Position {
         return owner;
     }
 
-    public double getImprovements() {
-        return improvements;
-    }
-
-    public boolean isHotel() {
-        return hotel;
-    }
 
     //构造一个带有位置编号、道路名称、道路上的编号和价格的 位置。
     //posnNum ：property的位置
@@ -95,47 +87,10 @@ public class Position {
     }
 
 
-    //传入该方法的玩家将改善此财产位置，并且改善的费用将从该玩家的银行账户中扣除。
-    // 费用取决于是否在该财产上建造了标准改善（房屋）或酒店。
-    //improver 改善此财产的玩家
-    //前提：该位置是一项财产，improver 是该财产的所有者，该财产尚未是酒店，改善不能超过 4 个
-    //return 交易的字符串表示形式
-    protected String improve(Player improver){
-        assert (property)           : "This is not a property.";
-        assert (improver == owner)  : "The player does not own this property.";
-        assert (!hotel)             : "This property cannot be improved further.";
-
-        String posnType = "";
-        double cost = 0;
-
-        // if there are 4 improvements, buy a hotel
-        if (improvements == 4) {
-            cost = 0.8 * price;
-            improver.setMoney(-cost);
-            improvements = 0;
-            hotel = true;
-            posnType = "hotel";
-        }
-
-        // if there are less than 4 improvements, buy an improvement
-        else if (improvements < 4){
-            cost = 0.5 * price;
-            improver.setMoney(-cost);
-            improvements++;
-            posnType = "house";
-        }
-
-        assert (!(improvements > 4)) : "Improvements cannot advance beyond 4.";
-
-        return improver.toString() + " pays \u00a3" + String.valueOf(cost)
-                + "0 to build a " + posnType + " at the property.";
-    }
-
 //override toString
 //用于返回该位置在游戏中的字符串表示。
 // 它将该位置的编号、名称、价格、所有者、改善等信息格式化为一个字符串并返回。
 
-// i表示改善等级（如果有酒店则为"Hotel"）
 // o表示所有者（如果没有则为"[]"）
 // s表示位置的编号和名称。如果该位置不是财产，则返回一个空字符串
 // 如果该位置是GO或JAIL，则返回一个特殊的格式化字符串。
@@ -144,10 +99,6 @@ public class Position {
     @Override
     public String toString(){
         String i = "", o = "";
-
-        i += String.valueOf(improvements);
-        if (hotel)
-            i = "Hotel";
 
         if (owner != null)
             o += " " + owner.toString();

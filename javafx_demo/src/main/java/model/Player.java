@@ -9,10 +9,12 @@ import java.util.Iterator;
 // 玩家可以购买财产，如果他们拥有一整套财产，他们可以扩建（改善）。
 public class Player {
     private final boolean playerOne;
-    private final ArrayList<Position> properties = new ArrayList<>();
     private Position position;
-    private Iterator<Position> positionIter;   //表示该玩家在游戏中前进时所使用的迭代器，它用于遍历所有的位置。
     private double money;
+    private final ArrayList<Position> properties = new ArrayList<>();
+
+    private Iterator<Position> positionIter;   //表示该玩家在游戏中前进时所使用的迭代器，它用于遍历所有的位置。
+
 
     public boolean isPlayerOne() {
         return playerOne;

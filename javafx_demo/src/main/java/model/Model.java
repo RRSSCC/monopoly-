@@ -35,10 +35,6 @@ public class Model extends Observable {
         return currentPlayer;
     }
 
-    public boolean isFirstTurn() {
-        return firstTurn;
-    }//一用就报错，不用也能运行，暂时留着
-
     public int getDiceRoll(){
         return diceRoll;
     }
@@ -183,16 +179,6 @@ public class Model extends Observable {
         if (posn.getOwner().ownsAllPrptsOnRoad(posn.getRoad())) {
             rent = 0.2 * posn.getPrice();
 
-            // 如果为hotel
-            if (posn.isHotel())
-                rent += 0.1 * ((4.0 * 0.5 * posn.getPrice())
-                        + (0.8 * posn.getPrice()));
-
-            // 如果有扩建
-            if (posn.getImprovements() > 0) {
-                rent += 0.1 * (posn.getImprovements()
-                        * 0.5 * posn.getPrice());
-            }
         } else {
             // 最低租金
             rent += 0.1 * posn.getPrice();
@@ -230,12 +216,8 @@ public class Model extends Observable {
             notifyObservers();
             return s;
         }
-        else {
-            s = currentPosn.improve(currentPlayer);
-            setChanged();
-            notifyObservers();
-            return s;
-        }
+        s = currentPosn.buy(currentPlayer);
+        return s;
     }
 
     //如果当前玩家需要支付租金，则为 tru
@@ -254,9 +236,7 @@ public class Model extends Observable {
     //如果当前玩家可以扩建，则为 true
     public boolean isCurrentPosnImprovable(){
         return  currentPlayer.getPosition().isProperty()
-                && (currentPlayer.ownsAllPrptsOnRoad(
-                currentPlayer.getPosition().getRoad()
-        ) && !currentPlayer.getPosition().isHotel());
+                && (currentPlayer.ownsAllPrptsOnRoad(currentPlayer.getPosition().getRoad()) );
     }
 
     //没钱了就输了
